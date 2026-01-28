@@ -2,6 +2,7 @@
 
 import { prisma } from '@/lib/prisma'
 import { auth } from '@clerk/nextjs/server'
+import { tasks } from "@trigger.dev/sdk/v3";
 
 export async function createEntry(formData: FormData) {
   const { userId } = await auth()
@@ -19,11 +20,20 @@ export async function createEntry(formData: FormData) {
     create: { clerkId: userId },
   })
 
-  await prisma.entry.create({
+  const entry = await prisma.entry.create({
     data: {
       userId: user.id,
       date,
       text,
-    },
+      imageGen: {
+      create: {
+        status: "pending",
+        prompt: "", // placeholder for now
+        },
+      },
+    }
   })
+
+  // enqueue image generation task
+  await tasks.trigger("generate-entry-image", { entryId: entry.id });
 }
