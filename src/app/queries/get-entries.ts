@@ -13,7 +13,11 @@ export async function getEntries() {
 
   return prisma.entry.findMany({
     where: { userId: user.id },
-    select: { id: true, date: true },
+    select: {
+      id: true,
+      date: true,
+      imageGen: { select: { status: true, imageUrl: true } },
+    },
     orderBy: { date: 'asc' },
   })
 }
