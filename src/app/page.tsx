@@ -1,5 +1,7 @@
 import { getEntries } from './queries/get-entries'
 import { createEntry } from './actions/create-entry'
+import { auth } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
 import Image from "next/image";
 
 
@@ -9,6 +11,10 @@ function toKey(d: Date) {
 }
 
 export default async function Page() {
+  const { userId } = await auth();
+
+  if (! userId ) redirect("/sign-in")
+
   const entries = await getEntries()
 
   // last 84 days (12 weeks)
