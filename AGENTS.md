@@ -25,3 +25,9 @@
 - Do not invent features outside the spec.
 - Prefer small, incremental changes over broad refactors.
 - Avoid modifying unrelated files.
+
+## Coding Rules
+- comment should follow the JSDoc 3 standard.
+- Add function comments.
+- Add class comments.
+- Add comments for any major code chunk that seems too complex.
