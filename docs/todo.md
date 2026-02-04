@@ -6,25 +6,25 @@
 - [ ] Decide if "scroll to view earlier days" should be a button or infinite scroll.
 
 ## Data & Utilities
-- [ ] Add date utilities in `src/lib/dates.ts`:
-  - [ ] `toKey(date)`
-  - [ ] `startOfDay(date)`
-  - [ ] `endOfDay(date)`
-  - [ ] `rangeForLastNWeeks(n, today)`
-  - [ ] `rangeForYear(year, today)`
-- [ ] Add `getEntriesByRange({ start, end })` query in `src/app/queries/get-entries.ts`.
-- [ ] Ensure entries include `id`, `date`, `text`, and `imageGen { status, imageUrl }`.
+- [x] Add date utilities in `src/lib/dates.ts`:
+  - [x] `toKey(date)`
+  - [x] `startOfDay(date)`
+  - [x] `endOfDay(date)`
+  - [x] `rangeForLastNWeeks(n, today)`
+  - [x] `rangeForYear(year, today)`
+- [x] Add `getEntriesByRange({ start, end })` query in `src/app/queries/get-entries.ts`.
+- [x] Ensure entries include `id`, `date`, `text`, and `imageGen { status, imageUrl }`.
 
 ## Server Actions
-- [ ] Update `createEntry` to return a typed result:
-  - [ ] Normalize date to start-of-day.
-  - [ ] Handle duplicates (P2002) with a `duplicate` error.
-  - [ ] Keep image generation trigger on success.
-- [ ] Add `updateEntry` action:
-  - [ ] Verify ownership by `userId`.
-  - [ ] Update entry text.
-  - [ ] Optionally reset image generation + re-trigger task.
-  - [ ] Return typed result for UI handling.
+- [x] Update `createEntry` to return a typed result:
+  - [x] Normalize date to start-of-day.
+  - [x] Handle duplicates (P2002) with a `duplicate` error.
+  - [x] Keep image generation trigger on success.
+- [x] Add `updateEntry` action:
+  - [x] Verify ownership by `userId`.
+  - [x] Update entry text.
+  - [x] Optionally reset image generation + re-trigger task.
+  - [x] Return typed result for UI handling.
 
 ## UI Foundation (shadcn/ui)
 - [ ] Add `src/lib/utils.ts` with `cn()` helper.
@@ -59,6 +59,7 @@
 - [ ] Add "Load earlier" control (or infinite scroll) to extend range.
 - [ ] Wire data fetching to `getEntriesByRange` for expanded ranges.
 - [ ] Wrap grid in `ScrollArea` for horizontal overflow.
+ - [ ] Compute date range on the server and pass days/entries as props to avoid hydration mismatch.
 
 ## Zoom / Year View
 - [ ] Add zoom control (`weeks` / `year`).
