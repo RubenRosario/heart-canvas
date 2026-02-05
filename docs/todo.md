@@ -27,64 +27,67 @@
   - [x] Return typed result for UI handling.
 
 ## UI Foundation (shadcn/ui)
-- [ ] Add `src/lib/utils.ts` with `cn()` helper.
-- [ ] Add shadcn/ui components:
-  - [ ] `Button`
-  - [ ] `Input`
-  - [ ] `Textarea`
-  - [ ] `Dialog`
-  - [ ] `ScrollArea`
-  - [ ] `Slider`
-- [ ] Add dependencies if missing: `class-variance-authority`, `clsx`, `tailwind-merge`, `lucide-react`.
-- [ ] Update `src/app/globals.css` if needed for shadcn defaults.
+- [x] Add shadcn/ui components:
+  - [x] `Button`
+  - [x] `Input`
+  - [x] `Textarea`
+  - [x] `Dialog`
+  - [x] `ScrollArea`
+  - [x] `Slider`
+- [x] Add dependencies if missing: `class-variance-authority`, `clsx`, `tailwind-merge`, `lucide-react`.
+- [x] Update `src/app/globals.css` if needed for shadcn defaults.
 
 ## Component Refactor (no behavior change)
-- [ ] Create `src/components/EntryForm.tsx` (client component).
-- [ ] Create `src/components/Board.tsx` (server component for initial refactor).
-- [ ] Create `src/components/DayCell.tsx`.
-- [ ] Update `src/app/page.tsx` to use components.
+- [x] Create `src/components/EntryForm.tsx` (client component).
+- [x] Create `src/components/Board.tsx` (server component for initial refactor).
+- [x] Create `src/components/DayCell.tsx`.
+- [x] Update `src/app/page.tsx` to use components.
 
 ## Board Behavior (4-week default)
-- [ ] Switch to 4-week default range using `rangeForLastNWeeks(4)`.
-- [ ] Convert grid to weeks-by-days layout (`grid-flow-col`, `grid-rows-7`).
-- [ ] Add status styling:
-  - [ ] Empty
-  - [ ] Pending
-  - [ ] Complete (image)
-  - [ ] Failed
-- [ ] Keep day number label (top-left, muted).
+- [x] Switch to 4-week default range using `rangeForLastNWeeks(4)`.
+- [x] Convert grid to weeks-by-days layout (`grid-flow-row`, `grid-cols-7`).
+- [x] Add status styling:
+  - [x] Empty
+  - [x] Pending
+  - [x] Complete (image)
+  - [x] Failed
+- [x] Keep day number label (top-left, muted).
 
 ## Scroll / Range Expansion
-- [ ] Convert `Board` to client component with `weeksLoaded` state.
-- [ ] Add "Load earlier" control (or infinite scroll) to extend range.
-- [ ] Wire data fetching to `getEntriesByRange` for expanded ranges.
-- [ ] Wrap grid in `ScrollArea` for horizontal overflow.
- - [ ] Compute date range on the server and pass days/entries as props to avoid hydration mismatch.
+- [x] Convert `Board` to client component with `weeksLoaded` state.
+- [x] Add "Load earlier" control (or infinite scroll) to extend range.
+- [x] Wire data fetching to `getEntriesByRange` for expanded ranges.
+- [x] Wrap grid in `ScrollArea` for horizontal overflow.
+ - [x] Compute date range on the server and pass days/entries as props to avoid hydration mismatch.
 
 ## Zoom / Year View
-- [ ] Add zoom control (`weeks` / `year`).
-- [ ] Fetch full-year range when in year view.
-- [ ] Adjust cell sizing for year view.
+- [x] Add zoom control (`weeks` / `year`).
+- [x] Fetch full-year range when in year view.
+- [x] Adjust cell sizing for year view.
 
 ## Editing Flow
-- [ ] Add edit affordance on `DayCell` for days with entries.
-- [ ] Implement edit dialog with `Textarea`.
-- [ ] Call `updateEntry` and refresh board on success.
-- [ ] Handle error states and preserve status indicators.
+- [x] Add edit affordance on `DayCell` for days with entries.
+- [x] Implement edit dialog with `Textarea`.
+- [x] Call `updateEntry` and refresh board on success.
+- [x] Handle error states and preserve status indicators.
 
 ## Responsiveness & UX Polish
-- [ ] Ensure form + controls stack on mobile.
-- [ ] Verify grid scrolls correctly on small screens.
-- [ ] Ensure labels remain legible at small sizes.
-- [ ] Confirm `next/image` sizing works for all breakpoints.
+- [x] Ensure form + controls stack on mobile.
+- [x] Verify grid scrolls correctly on small screens.
+- [x] Ensure labels remain legible at small sizes.
+- [x] Confirm `next/image` sizing works for all breakpoints.
 
 ## Verification Checklist
-- [ ] Can sign in and reach `/`.
-- [ ] Can create an entry for today.
-- [ ] Duplicate entry for same day is rejected.
-- [ ] Pending state visible after creation.
-- [ ] Completed image renders when generation finishes.
-- [ ] Can edit an existing entry.
-- [ ] Can load earlier days.
-- [ ] Can zoom out to a full-year view.
+- [x] Can sign in and reach `/`.
+- [x] Can create an entry for today.
+- [x] Duplicate entry for same day is rejected.
+- [x] Pending state visible after creation.
+- [x] Completed image renders when generation finishes.
+- [x] Can edit an existing entry.
+- [x] Can load earlier days.
+- [x] Can zoom out to a full-year view.
 - [ ] Layout is responsive on mobile/tablet/desktop.
+
+## Image Quality & Full-Scale Viewer
+- [ ] Ensure images render at appropriate resolution to avoid pixelation at display size.
+- [ ] Add click-to-view full-scale image dialog (click image, not edit icon).

@@ -151,10 +151,12 @@ Goal: adopt shadcn/ui for the project and add the minimal component set the UI w
 Spec anchor: "shadcn/ui for UI components".
 
 Changes:
-1) Add the shadcn utilities file `src/lib/utils.ts` with `cn()` (clsx + tailwind-merge).
-2) Add minimal shadcn components in `src/components/ui/`:
-   - `button.tsx`, `input.tsx`, `textarea.tsx`, `dialog.tsx`, `scroll-area.tsx`, `slider.tsx`.
-3) Add required deps to `package.json` if missing: `class-variance-authority`, `clsx`, `tailwind-merge`, `lucide-react`.
+1) Use the shadcn CLI to initialize the project (do not add files manually):
+   - Run `npx shadcn@latest init`.
+   - If the CLI asks for a component library, choose **Base UI**. If it does not, use `npx shadcn create` to generate a Base UI-configured setup and then mirror the config in this repo.
+2) Use the shadcn CLI to add the minimal components:
+   - `npx shadcn@latest add button input textarea dialog scroll-area slider`
+3) Verify `src/lib/utils.ts` (with `cn()`), `components.json`, and required dependencies were created/updated by the CLI.
 4) Update `src/app/globals.css` only if necessary for shadcn defaults.
 
 Do not refactor page UI yet.
@@ -214,7 +216,7 @@ Changes:
 2) Add a "Load earlier" button (shadcn `Button`) that increments `weeksLoaded` by 4.
 3) Update data fetching to use `getEntriesByRange` for the computed range.
    - You can pass initial entries from the server and refetch on expansion using a server action or route handler.
-4) Wrap the grid in `ScrollArea` so horizontal scrolling is possible as the grid grows.
+4) Wrap the grid in `ScrollArea` so vertical scrolling is possible as the grid grows.
 
 End with files changed and assumptions.
 ```
@@ -270,6 +272,23 @@ Changes:
    - edit entry
    - load earlier
    - zoom year
+
+End with files changed and assumptions.
+```
+
+## Prompt 11 - Image quality + full-scale viewer
+```text
+Follow `AGENTS.md`.
+
+Goal: ensure board images render at the right resolution and add a full-scale image dialog on click.
+
+Spec anchors: "Images are served at an appropriate resolution to avoid pixelation at their display size", "Clicking an image (not the edit icon) opens a dialog with the image at full scale".
+
+Changes:
+1) Update the board image rendering to use correct `sizes` and any needed `next/image` props so images are not pixelated at their on-screen size.
+2) Add a click handler on the image (not the edit icon) to open a shadcn `Dialog` with the full-scale image.
+3) Ensure the dialog does not interfere with the edit dialog and respects existing hover behavior.
+4) Preserve existing status styling and day labels.
 
 End with files changed and assumptions.
 ```
