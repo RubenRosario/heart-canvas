@@ -33,27 +33,40 @@ Each day with a gratitude entry generates a unique image that represents that da
 - Entry includes:
   - Date
   - Free-text gratitude description
+- Default creation flow is modal-based from the board (today cell `Add` affordance)
 - Duplicate entries for the same day are rejected
 
 ### 4.3 Entry Editing
 - Users can update an existing gratitude entry for a day
+- Existing-entry cells can open a reflection modal for editing text
 - Editing an entry updates its text (and may regenerate the image)
 
 ### 4.4 Board View
 - Displays a **calendar-like grid** of recent days
 - Grid fills the full page width
+- Board container width remains fixed; density controls do not resize the board container
+- Includes Figma-style `S / M / L` density controls (changed only by minus/plus controls)
+- Density controls change cells-per-row and reflow day cells across rows:
+  - `S`: 28 columns
+  - `M`: 14 columns
+  - `L`: 7 columns
+- Default density is responsive by screen size:
+  - Phone: `L`
+  - Tablet: `M`
+  - Desktop: `S`
+- Users can still manually switch between `S / M / L` on all device sizes
 - Each cell:
   - Represents a single calendar day
   - Has no spacing between cells
   - Has a light gray border
-  - Shows the day number (top-left, muted text)
+  - Does not show a default day number
+  - Shows a top-left date label only for the first day of each month, formatted as `MMM d` (e.g. `Feb 1`)
+  - Shows an `Add` affordance on the current day when no entry exists
 - Cell states:
   - Empty (no entry)
   - Pending (entry exists, image generation running)
   - Complete (image generated)
-- Default view shows the last 4 weeks
-- Users can scroll to view earlier days
-- Users can zoom out to view the entire year as a big picture
+- All scaling options display the full current calendar year, including future days/months
 
 ### 4.5 Image Rendering
 - When image generation completes:
