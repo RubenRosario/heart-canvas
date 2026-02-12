@@ -1,4 +1,4 @@
-# Gratitude Board — Product & Technical Specification
+# Heart Canvas — Product & Technical Specification
 
 ## 1. Purpose
 A personal web application that helps users build a daily gratitude habit by visualizing entries as a calendar-style board of AI-generated images, inspired by GitHub’s contribution graph.
@@ -27,6 +27,8 @@ Each day with a gratitude entry generates a unique image that represents that da
 - Users **must be authenticated** to access the app
 - Unauthenticated users are redirected to `/sign-in`
 - Authentication handled by Clerk
+- Successful sign-in redirects to `/` (main board)
+- The sign-in/sign-up UI uses the same aesthetic language as the main board (slate gradient + glass surface)
 
 ### 4.2 Entry Creation
 - One gratitude entry per user per calendar day
@@ -34,11 +36,17 @@ Each day with a gratitude entry generates a unique image that represents that da
   - Date
   - Free-text gratitude description
 - Default creation flow is modal-based from the board (today cell `Add` affordance)
+- Users can create entries for past dates and the current date
+- Users cannot create entries for future dates
 - Duplicate entries for the same day are rejected
 
 ### 4.3 Entry Editing
 - Users can update an existing gratitude entry for a day
 - Existing-entry cells can open a reflection modal for editing text
+- Edit modal shows the entry image at large scale beside the reflection form
+- Create-entry modal does not show an image placeholder panel
+- Edit modal title uses the date of the entry (not the word `Today`)
+- Entries on future dates are not editable
 - Editing an entry updates its text (and may regenerate the image)
 
 ### 4.4 Board View
@@ -61,12 +69,15 @@ Each day with a gratitude entry generates a unique image that represents that da
   - Has a light gray border
   - Does not show a default day number
   - Shows a top-left date label only for the first day of each month, formatted as `MMM d` (e.g. `Feb 1`)
-  - Shows an `Add` affordance on the current day when no entry exists
+  - Shows an `Add` affordance on past/current days when no entry exists
+  - Current-day `+Add` is always visible; past-date `+Add` appears on hover
 - Cell states:
   - Empty (no entry)
-  - Pending (entry exists, image generation running)
+  - Pending (entry exists, image generation running with vivid animated state)
   - Complete (image generated)
 - All scaling options display the full current calendar year, including future days/months
+- Board header includes a `Log out` button in the top-right controls area
+- Board auto-refreshes while pending entries exist so completed images appear without manual reload
 
 ### 4.5 Image Rendering
 - When image generation completes:
