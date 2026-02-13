@@ -217,9 +217,18 @@ export function Board({
   return (
     <section className="min-h-screen bg-gradient-to-br from-[#f8fafc] via-[#f1f5f9] to-[#e2e8f0] text-slate-900 selection:bg-slate-200">
       <header className="mx-auto flex max-w-7xl flex-col justify-between gap-4 px-6 py-12 md:flex-row md:items-end">
-        <div>
-          <h1 className="text-4xl font-light leading-tight tracking-tight text-slate-950">Heart Canvas.</h1>
-          <p className="mt-2 text-base font-medium text-slate-700">A quiet space for reflection.</p>
+        <div className="flex items-center gap-4">
+          <img
+            src="/images/heart-canvas-logo.png"
+            alt="Heart Canvas logo"
+            width={56}
+            height={56}
+            className="h-14 w-14 shrink-0 object-contain"
+          />
+          <div>
+            <h1 className="text-4xl font-light leading-tight tracking-tight text-slate-950">Heart Canvas</h1>
+            <p className="mt-1 text-base font-medium text-slate-700">A quiet space for reflection.</p>
+          </div>
         </div>
 
         <div className="flex flex-col items-end gap-3 text-right">
