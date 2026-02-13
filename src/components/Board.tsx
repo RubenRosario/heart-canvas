@@ -1,6 +1,8 @@
 'use client'
 
+import Image from 'next/image'
 import { useCallback, useEffect, useMemo, useState, useTransition } from 'react'
+import { SignOutButton } from '@clerk/nextjs'
 import { Minus, Plus } from 'lucide-react'
 import { DayCell } from '@/components/DayCell'
 import { startOfDay, toKey } from '@/lib/dates'
@@ -39,6 +41,20 @@ function getDefaultDensityForWidth(width: number): 1 | 2 | 3 {
   if (width < 768) return 3
   if (width < 1024) return 2
   return 1
+}
+
+/**
+ * Format a board date string for headings and labels.
+ * @param dateKey - ISO date key in YYYY-MM-DD format.
+ * @returns A human-readable localized date string.
+ */
+function formatBoardDate(dateKey: string): string {
+  const parsed = new Date(`${dateKey}T00:00:00`)
+  return parsed.toLocaleDateString(undefined, {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  })
 }
 
 /**
@@ -86,6 +102,21 @@ export function Board({
     })
   }, [refreshEntries, startTransition])
 
+  useEffect(() => {
+    const hasPending = loadedEntries.some((entry) => entry.imageGen?.status === 'pending')
+    if (!hasPending) return
+
+    const pollingId = window.setInterval(() => {
+      startTransition(async () => {
+        await refreshEntries()
+      })
+    }, 5000)
+
+    return () => {
+      window.clearInterval(pollingId)
+    }
+  }, [loadedEntries, refreshEntries, startTransition])
+
   const days: Date[] = []
   for (let day = new Date(range.start); day <= range.end; day.setDate(day.getDate() + 1)) {
     days.push(new Date(day))
@@ -96,6 +127,9 @@ export function Board({
   }, [loadedEntries])
 
   const todayKey = toKey(new Date())
+  const selectedEntry = selectedDate ? entriesByDate.get(selectedDate) : undefined
+  const selectedEntryImageUrl = selectedEntry?.imageGen?.imageUrl ?? null
+  const selectedEntryDisplayDate = selectedDate ? formatBoardDate(selectedDate) : ''
   const columnsPerRow = useMemo(() => {
     if (effectiveDensity === 1) return 28
     if (effectiveDensity === 2) return 14
@@ -108,6 +142,7 @@ export function Board({
    * @returns Nothing.
    */
   function openCreateModal(date: string) {
+    if (date > todayKey) return
     setSelectedDate(date)
     setSelectedEntryId(null)
     setNote('')
@@ -121,6 +156,7 @@ export function Board({
    * @returns Nothing.
    */
   function openEditModal(date: string) {
+    if (date > todayKey) return
     const entry = entriesByDate.get(date)
     if (!entry?.id) return
 
@@ -137,7 +173,7 @@ export function Board({
    */
   async function submitReflection(): Promise<void> {
     const trimmedNote = note.trim()
-    if (!selectedDate || !trimmedNote) {
+    if (!selectedDate || !trimmedNote || selectedDate > todayKey) {
       setModalError('Please write your reflection before saving.')
       return
     }
@@ -146,7 +182,11 @@ export function Board({
       if (selectedEntryId) {
         const result = await updateEntry({ entryId: selectedEntryId, text: trimmedNote })
         if (!result.ok) {
-          setModalError('We could not save your update. Please try again.')
+          setModalError(
+            result.error === 'invalid'
+              ? 'Future dates cannot be edited.'
+              : 'We could not save your update. Please try again.'
+          )
           return
         }
       } else {
@@ -159,7 +199,7 @@ export function Board({
           setModalError(
             result.error === 'duplicate'
               ? 'There is already a reflection for this date.'
-              : 'Please provide a valid date and reflection text.'
+              : 'Please provide a valid past or current date and reflection text.'
           )
           return
         }
@@ -178,7 +218,7 @@ export function Board({
     <section className="min-h-screen bg-gradient-to-br from-[#f8fafc] via-[#f1f5f9] to-[#e2e8f0] text-slate-900 selection:bg-slate-200">
       <header className="mx-auto flex max-w-7xl flex-col justify-between gap-4 px-6 py-12 md:flex-row md:items-end">
         <div>
-          <h1 className="text-4xl font-light leading-tight tracking-tight text-slate-950">Gratitude Board</h1>
+          <h1 className="text-4xl font-light leading-tight tracking-tight text-slate-950">Heart Canvas.</h1>
           <p className="mt-2 text-base font-medium text-slate-700">A quiet space for reflection.</p>
         </div>
 
@@ -187,7 +227,7 @@ export function Board({
             {currentYear} / Perspective
           </span>
 
-          <div className="flex items-center">
+          <div className="flex items-center gap-2">
             <div className="flex items-center rounded-full border border-slate-200 bg-white/90 p-1 shadow-sm backdrop-blur-sm">
               <button
                 type="button"
@@ -223,6 +263,15 @@ export function Board({
                 <Plus className="h-3.5 w-3.5 text-slate-800" />
               </button>
             </div>
+            <SignOutButton redirectUrl="/sign-in">
+              <Button
+                type="button"
+                variant="outline"
+                className="rounded-full border-slate-200 bg-white/90 text-xs font-semibold text-slate-700 hover:bg-slate-100"
+              >
+                Log out
+              </Button>
+            </SignOutButton>
           </div>
         </div>
       </header>
@@ -244,6 +293,8 @@ export function Board({
                   day={day}
                   entry={entriesByDate.get(dayKey)}
                   isToday={dayKey === todayKey}
+                  canAddEntry={dayKey <= todayKey}
+                  canEditEntry={dayKey <= todayKey}
                   topLabel={monthStartLabel}
                   onAddEntry={openCreateModal}
                   onEditEntry={openEditModal}
@@ -259,22 +310,43 @@ export function Board({
       </footer>
 
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="border-none bg-white/98 shadow-2xl backdrop-blur-xl sm:max-w-[425px]">
+        <DialogContent className="border-none bg-white/98 shadow-2xl backdrop-blur-xl sm:max-w-4xl">
           <DialogHeader className="space-y-3">
-            <DialogTitle className="text-2xl font-light text-slate-950">Today&apos;s Reflection</DialogTitle>
+            <DialogTitle className="text-2xl font-light text-slate-950">{selectedEntryDisplayDate}</DialogTitle>
             <DialogDescription className="text-base font-semibold text-slate-800">
-              What brought a quiet smile to your face today?
+              {selectedEntryId
+                ? 'Update your reflection and regenerate the image for this day.'
+                : 'What brought a quiet smile to your face on this day?'}
             </DialogDescription>
           </DialogHeader>
 
-          <div className="py-6">
-            <Textarea
-              placeholder="Start writing..."
-              value={note}
-              onChange={(event) => setNote(event.target.value)}
-              className="min-h-[160px] resize-none border-slate-200 bg-slate-50/50 text-lg font-medium leading-relaxed text-slate-950 placeholder:text-slate-500 focus-visible:ring-slate-400"
-            />
-            {modalError ? <p className="pt-3 text-sm text-red-600">{modalError}</p> : null}
+          <div className={selectedEntryId ? 'grid gap-6 py-6 md:grid-cols-[1.1fr_1fr]' : 'py-6'}>
+            {selectedEntryId ? (
+              <div className="relative aspect-square overflow-hidden rounded-lg border border-slate-200 bg-slate-100/70">
+                {selectedEntryImageUrl ? (
+                  <Image
+                    src={selectedEntryImageUrl}
+                    alt={`Reflection image for ${selectedEntryDisplayDate}`}
+                    fill
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center px-6 text-center text-sm font-semibold text-slate-500">
+                    Image is pending generation for this entry.
+                  </div>
+                )}
+              </div>
+            ) : null}
+
+            <div>
+              <Textarea
+                placeholder="Start writing..."
+                value={note}
+                onChange={(event) => setNote(event.target.value)}
+                className="min-h-[300px] resize-none border-slate-200 bg-slate-50/50 text-lg font-medium leading-relaxed text-slate-950 placeholder:text-slate-500 focus-visible:ring-slate-400"
+              />
+              {modalError ? <p className="pt-3 text-sm text-red-600">{modalError}</p> : null}
+            </div>
           </div>
 
           <div className="flex justify-end pt-2">
