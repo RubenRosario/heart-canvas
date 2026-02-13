@@ -22,8 +22,9 @@ export async function createEntry(formData: FormData): Promise<CreateEntryResult
   const text = String(formData.get('text') || '')
   const rawDate = new Date(String(formData.get('date')))
   const date = startOfDay(rawDate)
+  const today = startOfDay(new Date())
 
-  if (!text || Number.isNaN(date.getTime())) return { ok: false, error: 'invalid' }
+  if (!text || Number.isNaN(date.getTime()) || date > today) return { ok: false, error: 'invalid' }
 
   // Ensure local user exists (idempotent).
   const user = await prisma.user.upsert({

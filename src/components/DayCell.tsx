@@ -23,7 +23,7 @@ type Entry = {
  */
 function statusToClass(status: string): string {
   if (status === 'pending') {
-    return 'bg-gradient-to-br from-blue-50/50 to-indigo-50/50 animate-pulse'
+    return 'bg-gradient-to-br from-fuchsia-200/70 via-sky-200/70 to-violet-200/70 animate-[pulse_1s_ease-in-out_infinite]'
   }
 
   if (status === 'failed') {
@@ -41,8 +41,9 @@ function statusToClass(status: string): string {
  * Render one board day cell with Figma-aligned visual behavior.
  * @param props.day - Calendar day represented by the cell.
  * @param props.entry - Optional gratitude entry for that day.
- * @param props.isToday - Whether this cell is the current day.
  * @param props.topLabel - Optional top-left date label (e.g. month starts).
+ * @param props.canAddEntry - Whether the add affordance should be shown.
+ * @param props.canEditEntry - Whether editing this day is allowed.
  * @param props.onAddEntry - Callback for opening create flow for a day.
  * @param props.onEditEntry - Callback for opening edit flow for an existing day entry.
  * @returns A day cell with image/status layers and hover affordances.
@@ -52,6 +53,8 @@ export function DayCell({
   entry,
   isToday,
   topLabel,
+  canAddEntry,
+  canEditEntry,
   onAddEntry,
   onEditEntry,
 }: {
@@ -59,6 +62,8 @@ export function DayCell({
   entry?: Entry
   isToday?: boolean
   topLabel?: string
+  canAddEntry?: boolean
+  canEditEntry?: boolean
   onAddEntry?: (date: string) => void
   onEditEntry?: (date: string) => void
 }) {
@@ -69,18 +74,18 @@ export function DayCell({
   return (
     <div
       title={`${dateKey} - ${status}`}
-      role={entry?.id ? 'button' : undefined}
-      tabIndex={entry?.id ? 0 : -1}
-      onClick={() => (entry?.id ? onEditEntry?.(dateKey) : undefined)}
+      role={entry?.id && canEditEntry ? 'button' : undefined}
+      tabIndex={entry?.id && canEditEntry ? 0 : -1}
+      onClick={() => (entry?.id && canEditEntry ? onEditEntry?.(dateKey) : undefined)}
       onKeyDown={(event) => {
-        if (event.key === 'Enter' && entry?.id) {
+        if (event.key === 'Enter' && entry?.id && canEditEntry) {
           onEditEntry?.(dateKey)
         }
       }}
       className={cn(
         'group relative -mb-px -mr-px aspect-square h-full w-full overflow-hidden border border-slate-100 transition-all duration-300',
         statusToClass(status),
-        entry?.id ? 'cursor-text' : undefined
+        entry?.id && canEditEntry ? 'cursor-pointer' : undefined
       )}
     >
       {imageUrl ? (
@@ -100,10 +105,13 @@ export function DayCell({
         </div>
       ) : null}
 
-      {isToday && !entry ? (
+      {canAddEntry && !entry ? (
         <button
           type="button"
-          className="absolute inset-0 z-10 flex flex-col items-center justify-center text-slate-500 transition-colors hover:text-slate-900"
+          className={cn(
+            'absolute inset-0 z-10 flex flex-col items-center justify-center text-slate-500 transition-colors hover:text-slate-900',
+            isToday ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+          )}
           onClick={(event) => {
             event.stopPropagation()
             onAddEntry?.(dateKey)

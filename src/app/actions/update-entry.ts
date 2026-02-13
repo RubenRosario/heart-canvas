@@ -3,6 +3,7 @@
 import { prisma } from '@/lib/prisma'
 import { auth } from '@clerk/nextjs/server'
 import { tasks } from '@trigger.dev/sdk/v3'
+import { startOfDay } from '@/lib/dates'
 
 export type UpdateEntryResult =
   | { ok: true }
@@ -37,9 +38,12 @@ export async function updateEntry({
   // Ensure the entry belongs to the signed-in user.
   const entry = await prisma.entry.findFirst({
     where: { id: entryId, userId: user.id },
-    select: { id: true },
+    select: { id: true, date: true },
   })
   if (!entry) return { ok: false, error: 'not_found' }
+  if (startOfDay(new Date(entry.date)) > startOfDay(new Date())) {
+    return { ok: false, error: 'invalid' }
+  }
 
   // Update text and reset image generation so a fresh image can be created.
   await prisma.$transaction([
