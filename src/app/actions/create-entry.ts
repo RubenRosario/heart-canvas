@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma'
 import { auth } from '@clerk/nextjs/server'
 import { tasks } from "@trigger.dev/sdk/v3";
 import { startOfDay } from '@/lib/dates'
-import { Prisma } from '@/generated/prisma'
+import { Prisma } from '@prisma/client'
 
 export type CreateEntryResult =
   | { ok: true }
